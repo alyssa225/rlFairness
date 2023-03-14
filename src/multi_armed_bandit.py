@@ -78,11 +78,43 @@ class MultiArmedBandit:
         self.N = np.zeros(n_actions)
         avg_rewards = np.zeros([num_bins])
         all_rewards = []
-
+        state_action_values = np.zeros((n_states, n_actions))
+        print('env.action_space: ', env.action_space)
+        print('n_actions: ', n_actions)
+        print('n_states: ', n_states)
+        print('epsilon: ', self.epsilon)
         # reset environment before your first action
         env.reset()
-
-        raise NotImplementedError
+        s = int(np.ceil(steps / num_bins))
+        for i in range(steps):
+          p = src.random.rand()
+          # print('prob: ', p)
+          if p < self.epsilon:
+            # print('exploit')
+            # print('Q: ', self.Q)
+            A=src.random.choice(np.arange(self.Q.shape[0]))
+          else:
+            # print('explore')
+            A=src.random.choice(n_actions)
+          # print('A: ', A)
+          # print('env.step: ',env.step(A))
+          out = env.step(int(A))
+          # print('env.step: ',out)
+          # print('state: ',out[0])
+          # print('rewards: ',out[1])
+          rewards = out[1]
+          all_rewards.append(out[1])
+          # print("all_rewards: ", all_rewards)
+          if i % s == 0 and i!=0:
+            # print('i: ', i)
+            # print('s: ', s)
+            # print('i/s-1: ', i/s-1)
+            avg_rewards[int(i/s-1)] = np.mean(all_rewards)
+            all_rewards = []
+          self.N[int(A)] += 1
+          self.Q[int(A)] = self.Q[int(A)] + 1/self.N[int(A)]*(rewards-self.Q[int(A)])
+          state_action_values[int(out[0]),int(A)] = self.Q[int(A)]
+          # print('state_action_values: ', state_action_values)
         return state_action_values, avg_rewards
 
     def predict(self, env, state_action_values):
@@ -126,5 +158,33 @@ class MultiArmedBandit:
         """
         # reset environment before your first action
         env.reset()
-
-        raise NotImplementedError
+        states = []
+        actions = []
+        rewards = []
+        truncated = False
+        S = 0
+        print('state_action_values: ', state_action_values)
+        while not truncated:
+          max = 0
+          maxi = []
+          for i, value in enumerate(state_action_values[S,:]):
+            if value>max:
+              max = value
+              maxi=[]
+              maxi.append(i)
+            elif value == max:
+              maxi.append(i)
+          print('max ind: ', maxi)
+          A=src.random.choice(maxi)
+          out = env.step(int(A))
+          if out[2] == True or out[3]==True:
+            truncated = True 
+          S = out[0]
+          states.append(out[0])
+          actions.append(A)
+          rewards.append(out[1])
+        np.array(states)
+        np.array(actions)
+        np.array(rewards)
+        # raise NotImplementedError
+        return states, actions, rewards
