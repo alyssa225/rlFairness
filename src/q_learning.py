@@ -87,11 +87,79 @@ class QLearning:
         state_action_values = np.zeros((n_states, n_actions))
         avg_rewards = np.zeros([num_bins])
         all_rewards = []
-
+        # self.Q = np.zeros((n_states, n_actions))
         current_state, _ = env.reset()
-
-        raise NotImplementedError
-
+        print('current_state: ', current_state)
+        s = int(np.ceil(steps / num_bins))
+        for i in range(steps):
+          # current_state=0
+          # truncated = False
+          # while not truncated:
+          p = src.random.rand()
+          # print('prob: ', p)
+          maxv = 0
+          maxi=[]
+          for i, savalue in enumerate(state_action_values[int(current_state),:]):
+            if savalue>maxv:
+              maxv = savalue
+              maxi=[]
+              maxi.append(i)
+            elif savalue == maxv:
+              maxi.append(i)
+          print(maxi)
+          if p < self.epsilon:
+            # print('exploit')
+            # print('Q: ', self.Q)
+            for i, savalue in enumerate(state_action_values[int(current_state),:]):
+              if savalue>maxv:
+                maxv = savalue
+                maxi=[]
+                maxi.append(i)
+              elif savalue == maxv:
+                maxi.append(i)
+              print(maxi)
+            A=src.random.choice(maxi)         
+          else:
+            # print('explore')
+            A=src.random.randint(n_actions)
+          # print('A: ', A)
+          # print('env.step: ',env.step(A))
+          out = env.step(int(A))
+          # print('env.step: ',out)
+          # print('S_prime: ',out[0])
+          # print('rewards: ',out[1])
+          rewards = out[1]
+          S_prime = out[0]
+          all_rewards.append(out[1])
+          # print("all_rewards: ", all_rewards)
+          if i % s == 0 and i!=0:
+            # print('i: ', i)
+            # print('s: ', s)
+            # print('i/s-1: ', i/s-1)
+            avg_rewards[int(i/s-1)] = np.mean(all_rewards)
+            all_rewards = []
+          # print('na: ', n_actions)
+          # print('Q: ', self.Q)
+          # print("Q[s',na]: ", self.Q[int(S_prime),n_actions])
+          
+          maxv = 0
+          maxi=[]
+          for i, savalue in enumerate(state_action_values[int(S_prime),:]):
+            if savalue>maxv:
+              maxv = savalue
+              maxi=[]
+              maxi.append(i)
+            elif savalue == maxv:
+              maxi.append(i)
+          print(maxi)
+          a = src.random.choice(maxi)
+          state_action_values[int(current_state),int(A)] = state_action_values[int(current_state),int(A)] + self.alpha*(rewards+self.gamma*state_action_values[int(S_prime),a]-state_action_values[int(current_state),int(A)])
+          # state_action_values[int(out[0]),int(A)] = self.Q[int(current_state),int(A)]
+          current_state = S_prime
+          if out[2] == True or out[3]==True:
+            current_state, _ = env.reset()
+          # print('current_state: ', current_state)
+          print('state_action_values: ', state_action_values)
         return state_action_values, avg_rewards
 
 
@@ -143,5 +211,30 @@ class QLearning:
 
         # reset environment before your first action
         current_state, _ = env.reset()
-
-        raise NotImplementedError
+        truncated = False
+        print('state_action_values: ', state_action_values)
+        while not truncated:
+          max = 0
+          maxi=[]
+          for i, savalue in enumerate(state_action_values[current_state,:]):
+            if savalue>max:
+              max = savalue
+              maxi=[]
+              maxi.append(i)
+            elif savalue == max:
+              maxi.append(i)
+          # print('max ind: ', maxi)
+          A=src.random.choice(maxi)
+          out = env.step(int(A))
+          if out[2] == True or out[3]==True:
+            truncated = True 
+          current_state = out[0]
+          states.append(out[0])
+          actions.append(A)
+          rewards.append(out[1])
+        np.array(states)
+        np.array(actions)
+        np.array(rewards)
+        # raise NotImplementedError
+        return states, actions, rewards
+        # raise NotImplementedError

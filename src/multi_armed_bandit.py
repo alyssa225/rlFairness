@@ -166,17 +166,19 @@ class MultiArmedBandit:
         print('state_action_values: ', state_action_values)
         while not truncated:
           max = 0
-          maxi = []
-          for i, value in enumerate(state_action_values[S,:]):
-            if value>max:
-              max = value
+          maxi=[]
+          for i, savalue in enumerate(state_action_values[S,:]):
+            if savalue>max:
+              max = savalue
               maxi=[]
               maxi.append(i)
-            elif value == max:
+            elif savalue == max:
               maxi.append(i)
           print('max ind: ', maxi)
           A=src.random.choice(maxi)
+          print('A: ',A)
           out = env.step(int(A))
+          print('out: ',out)
           if out[2] == True or out[3]==True:
             truncated = True 
           S = out[0]
