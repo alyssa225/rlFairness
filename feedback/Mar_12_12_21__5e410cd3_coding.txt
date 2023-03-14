@@ -1,0 +1,60 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.16, pytest-7.2.2, pluggy-1.0.0
+rootdir: /workspace
+collected 10 items
+tests/test_a_environment.py ..                                           [ 20%]
+tests/test_a_setup.py .                                                  [ 30%]
+tests/test_bandit.py FFF                                                 [ 60%]
+tests/test_q_learning.py FFFF                                            [100%]
+=================================== FAILURES ===================================
+______________________________ test_bandit_slots _______________________________
+>       state_action_values, rewards = agent.fit(env, steps=10000, num_bins=100)
+tests/test_bandit.py:22:
+>       raise NotImplementedError
+E       NotImplementedError
+src/multi_armed_bandit.py:85: NotImplementedError
+__________________________ test_bandit_random_argmax ___________________________
+>           _, a, _ = agent.predict(env, state_action_values)
+tests/test_bandit.py:62:
+>       raise NotImplementedError
+E       NotImplementedError
+src/multi_armed_bandit.py:130: NotImplementedError
+___________________________ test_bandit_frozen_lake ____________________________
+>       state_action_values, rewards = agent.fit(env, steps=1000)
+tests/test_bandit.py:83:
+>       raise NotImplementedError
+E       NotImplementedError
+src/multi_armed_bandit.py:85: NotImplementedError
+____________________________ test_q_learning_slots _____________________________
+>       state_action_values, rewards = agent.fit(env, steps=1000)
+tests/test_q_learning.py:22:
+>       raise NotImplementedError
+E       NotImplementedError
+src/q_learning.py:93: NotImplementedError
+_________________________ test_q_learning_frozen_lake __________________________
+>       state_action_values, rewards = agent.fit(env, steps=10000)
+tests/test_q_learning.py:50:
+>       raise NotImplementedError
+E       NotImplementedError
+src/q_learning.py:93: NotImplementedError
+________________________ test_q_learning_random_argmax _________________________
+>           _, a, _ = agent.predict(env, state_action_values)
+tests/test_q_learning.py:83:
+>       raise NotImplementedError
+E       NotImplementedError
+src/q_learning.py:147: NotImplementedError
+________________________ test_q_learning_deterministic _________________________
+>       states, actions, rewards = agent.predict(env, state_action_values)
+tests/test_q_learning.py:122:
+>       raise NotImplementedError
+E       NotImplementedError
+src/q_learning.py:147: NotImplementedError
+=========================== short test summary info ============================
+FAILED tests/test_bandit.py::test_bandit_slots - NotImplementedError
+FAILED tests/test_bandit.py::test_bandit_random_argmax - NotImplementedError
+FAILED tests/test_bandit.py::test_bandit_frozen_lake - NotImplementedError
+FAILED tests/test_q_learning.py::test_q_learning_slots - NotImplementedError
+FAILED tests/test_q_learning.py::test_q_learning_frozen_lake - NotImplemented...
+FAILED tests/test_q_learning.py::test_q_learning_random_argmax - NotImplement...
+FAILED tests/test_q_learning.py::test_q_learning_deterministic - NotImplement...
+========================= 7 failed, 3 passed in 0.64s ==========================
